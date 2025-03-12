@@ -3,7 +3,7 @@
 En este módulo, hemos trabajado con la base de datos Sakila, poniendo en práctica diversas herramientas de SQL, como queries avanzadas, JOINS, y subconsultas. Utilizando MySQL, hemos accedido a la base de datos para obtener y analizar datos clave de películas, actores y clientes.
 
 Diagrama de la Base de Datos
-![alt text](image-3.png)
+![alt text](Diagrama.png)
 *Este diagrama ilustra la estructura de las tablas de la base de datos Sakila.*
 
 ## ✨ Resultados Destacados ✨
@@ -24,7 +24,7 @@ A continuación, se muestran algunos de los hallazgos más interesantes durante 
 
 - Más del <span style="color:green">**57%**</span> de nuestras películas, tienen clasificación: PG,G, o NC-17. (ejercicio 8). Aquí hemos utilizado por ejemplo, esta query para calcularlo:
 
-![alt text](image-4.png)
+![alt text](Ejemplo_query.png)
 
 
 - Se han contabilizado las películas 🎞️ según su clasificación (ejercicio 9), y el número de alquileres por clasificación (ejercicio 12).
