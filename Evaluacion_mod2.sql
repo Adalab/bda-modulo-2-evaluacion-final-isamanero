@@ -9,7 +9,7 @@ USE sakila;
 SELECT *
 	FROM film;
     
--- Utilizo DISTINCT, que me permite eliminar duplicados:
+-- Utilizo DISTINCT, que me permite seleccionar los datos sin duplicados:
 
 SELECT DISTINCT title
 	FROM film;
@@ -18,8 +18,7 @@ SELECT DISTINCT title
 
 #####-- 2 Muestra los nombres de todas las películas que tengan una clasificación de "PG-13".
 
-/*Utilizando un where, podemos filtrar estas películas clasificadas en PG-13, he añadido la columna para
-el ejercicio, pero no sería necesaria*/
+-- Utilizando un where, podemos filtrar estas películas clasificadas en PG-13.
 
 SELECT title
 	FROM film
@@ -30,27 +29,22 @@ SELECT title
 /*#####-- 3 Encuentra el título y la descripción de todas las películas que contengan la palabra "amazing" en su
    descripción.*/
    
-/* description aparece en azul, como palabra reservada en SQL, pero la consulta es funcional, se puede
-solucionar entrecomillándolo, con acentos invertidos, pero la palabra aparece en rojo y tiene una estética
-que resulta más errónea*/
-   
 SELECT title, description
 	FROM film
     WHERE description LIKE '%amazing%';
+    
+    /* description aparece en azul, como palabra reservada en SQL, pero la consulta es funcional, se puede
+solucionar entrecomillándolo con acentos invertidos, pero la palabra aparece en rojo y tiene una estética
+que resulta visualmente más errónea*/
    
    
 ##### -- 4 Encuentra el título de todas las películas que tengan una duración mayor a 120 minutos.
- 
- -/*Al igual que el ejercicio anterior, he añadido la columna length (duración) para facilitar
- las comprobaciones del ejercicio, pero no es necesaria */
  
  SELECT title
 	FROM film
     WHERE length > 120;
  
  #####-- 5 Recupera los nombres de todos los actores.
- 
- -- Uitlizando la tabla actor
  
  SELECT DISTINCT first_name -- Para que no nos saque nombres repetidos.
 	FROM actor;
@@ -64,8 +58,6 @@ SELECT title, description
  -- Sólo hemos obtenido un actor con apellido Gibson.
  
  #####-- 7 Encuentra los nombres de los actores que tengan un actor_id entre 10 y 20.
- 
- -- Podríamos añadir actor_id en las columnas del resultado, para comprobaciones.
  
   SELECT first_name
 	FROM actor
@@ -91,41 +83,37 @@ SELECT title, description
  nombre y apellido junto con la cantidad de películas alquiladas.*/
  
  /*Aquí necesito sacar información de dos tablas, por un lado la información de los clientes (nombre y apellido)
- y la información de película (cantidad de películas alquiladas)*/
- 
- SELECT customer_id, first_name, last_name
-	FROM customer;
-
-SELECT *
-	FROM rental;
-
--- Necesitamos estas dos tablas, que podemos relacionar ya que tienen customer_id en común:
+ y la información de alquiler (cantidad de películas alquiladas)*/
+-- Necesitamos customer y rental, que podemos relacionar ya que tienen customer_id en común:
 -- Usando un alias para la columna, queda más limpia la consulta:
 
     SELECT c.customer_id, c.first_name, c.last_name, COUNT(r.rental_id) AS peliculas_alquiladas -- Aquí hacemos un COUNT para hacer recuento
 	FROM customer AS c
     INNER JOIN rental AS r
-    USING (customer_id)
+    USING (customer_id) -- USING se utiliza cuando las columnas se llaman igual en ambas tablas.
     GROUP BY c.customer_id, c.first_name, c.last_name
     ORDER BY peliculas_alquiladas DESC;
 
- 
  /*##### 11 Encuentra la cantidad total de películas alquiladas por categoría y muestra el nombre de la categoría
  junto con el recuento de alquileres.*/
  
- /* Aquí hacemos una relación parecida a la anterior, pero con la tabla film (pero tenemos que buscar
- un nexo intermedio entre las dos tablas, ya que no tienen en común.
- La tabla inventory, contiene film_id(de la tabla film) e inventory_id(que también la tiene la tabla rental)
- ese es nuestro nexo. En conclusión, tenemos que unir 3 tablas para relacionar nuestros datos*/
+ /* Buscamos los nexos intermedios entre las tablas:
+ Tabla category con film_category, de ahí recogemos el film_id para relacionarla con la tabla film, y finalmente
+ inventory con rental (inventory_id) porque necesitamos también los alquileres
+ En conclusión, tenemos que unir 4 tablas para relacionar nuestros datos*/
  
-SELECT f.rating AS categoría, COUNT(r.rental_id) AS peliculas_alquiladas
-	FROM film AS f -- primera tabla
-    INNER JOIN inventory AS i -- segunda tabla
+SELECT c.name AS categoria, COUNT(r.rental_id) AS alquileres_totales
+	FROM category AS c
+	INNER JOIN film_category AS fc
+    USING (category_id)
+	INNER JOIN film AS f
     USING (film_id)
-    INNER JOIN rental AS r -- tercera tabla
+	INNER JOIN inventory AS i
+    USING(film_id)
+	INNER JOIN rental AS r
     USING (inventory_id)
-    GROUP BY f.rating;
- 
+	GROUP BY c.name;
+
 
 /*##### 12 Encuentra el promedio de duración de las películas para cada clasificación de la tabla film
  y muestra la clasificación junto con el promedio de duración.*/
@@ -144,11 +132,11 @@ y relacionarlo con la tabla film (para poder filtrar por película)*/
 SELECT a.first_name, a.last_name
 	FROM actor AS a
     INNER JOIN film_actor AS f_a -- relación tabla actor con tabla film_actor
-    ON a.actor_id = f_a.actor_id -- recogemos el actor_id que es común
+    ON a.actor_id = f_a.actor_id -- recogemos el actor_id que es común (AQUI SE PUEDE USAR USING)
     INNER JOIN film AS f -- relacionamos la tabla film con la tabla film_actor
-    ON f_a.film_id = f.film_id -- para acceder a los datos de film, para relacionarlos con actor
+    ON f_a.film_id = f.film_id -- para acceder a los datos de film, para relacionarlos con actor (AQUI SE PUEDE USAR USING TAMBIEN)
     WHERE f.title = "Indian Love"
-    ORDER BY a.first_name ASC; -- Lo he ordenado alfabéticamente, aunque el ejercicio no lo pedía.
+    ORDER BY a.first_name ASC; -- Lo he ordenado alfabéticamente para mejor visualización.
 
 #####-- 14 -Muestra el título de todas las películas que contengan la palabra "dog" o "cat" en su descripción.
 
@@ -159,8 +147,8 @@ SELECT title
 #####-- 15 Hay algún actor o actriz que no aparezca en ninguna película en la tabla film_actor
 
 /*Podríamos responder a esta query de dos formas, en la primera, como actor_id
-se asocia con film_id, búsqueda de valores nulos. Si hay algun actor/actriz
-que no aparezca en alguna pelicula no tendrá film_id asociado. */
+se asocia con film_id, búsqueda de valores nulos.
+Si hay algun actor/actriz que no aparezca en alguna pelicula no tendrá film_id asociado. */
 
 SELECT *
 	FROM film_actor
@@ -177,7 +165,7 @@ SELECT first_name, last_name
 	FROM film_actor); -- Aquí metemos la consulta anterior, y NOT IN, por que nos piden que no aparezca en ninguna película.
     -- Como además se especifica de la tabla film_actor, por eso está dentro de la subconsulta.
    
--- Es nulo, por lo que todos los actores aparecen en alguna pelicula
+-- Es nulo, por lo que todos los actores están asociados a alguna pelicula
     
 #####-- 16 Encuentra el título de todas las películas que fueron lanzadas entre el año 2005 y 2010.
 
@@ -187,7 +175,7 @@ SELECT title
     ORDER BY release_year ASC;
 
 -- Obtenemos el mismo número de datos, es decir todas las películas fueron lanzadas entre 2005 y 2010:
--- ADEMÁS, Con esta comprobación, podemos ver que además, todas son de 2006.
+-- ADEMÁS, Con la siguiente comprobación, podemos ver que además, todas son de 2006.
 
 SELECT release_year, COUNT(release_year)
 		FROM film
@@ -210,8 +198,7 @@ SELECT f.title AS peliculas_familiares
 
 #####-- 18 Muestra el nombre y apellido de los actores que aparecen en más de 10 películas.
 
-
-SELECT a.first_name, a.last_name -- COUNT(f.film_id) AS numero_peliculas (podemos poner esta columna también)
+SELECT a.first_name, a.last_name -- COUNT(f.film_id) AS numero_peliculas (podemos poner esta columna también, para conocer el numero de peliculas)
 	FROM actor AS a
     INNER JOIN film_actor AS f_a 
     ON a.actor_id = f_a.actor_id 
@@ -263,14 +250,15 @@ SELECT c.name AS categoria, AVG(f.length) AS duracion_promedio
  SELECT *
 	FROM rental -- Aquí tenemos el rental_date y el retunr_date, para calcular cuales son mayores a 5.
     WHERE DATEDIFF(return_date,rental_date) >=5; -- He usado DATEDIFF, que es una función para calcular la diferencia entre dos fechas, en días.
-
+    
+-- También se puede usar TIMESTAMPDIFF si se quisiera en un formato diferente (meses, años...)
 
 SELECT r.inventory_id
     FROM rental AS r
     WHERE DATEDIFF(r.return_date, r.rental_date) >= 5; -- Aquí tenemos los inventory_id, que se relacionaran con la tabla inventory
     
     
--- Teniendo esto, vamos a pasar ahora por la tabla inventory, para relacionarla con rental y a su vez con film:
+-- Teniendo todo esto, vamos a pasar ahora por la tabla inventory, para relacionarla con rental y a su vez con film:
 
 SELECT DISTINCT f.title
 	FROM film AS f
@@ -283,8 +271,8 @@ WHERE i.inventory_id IN (SELECT r.inventory_id
 
 /* ESTA PARTE ES SÓLO UNA EXPLICACIÓN DEL USO DEL DISTINCT:
 
-Aplicamos la función DISTINCT, por que si no obtenemos títulos repetidos si la misma película, se ha alquilado más veces más de 5 días por diferentes usuarios
-Al ejecutar la siguente query, obtenemos las películas repetidas y el cusomer id)
+Aplicamos la función DISTINCT, por que si no obtenemos títulos repetidos, si la misma película se ha alquilado más veces más de 5 días por diferentes usuarios
+Al ejecutar la siguente query, obtendríamos las películas repetidas y el cusomer_id)/*
 
 SELECT f.title, r.customer_id
 FROM film AS f
@@ -295,7 +283,7 @@ USING (inventory_id)
 WHERE r.inventory_id IN (
     SELECT r.inventory_id
     FROM rental AS r
-    WHERE DATEDIFF(return_date,rental_date) >= 5);*/
+    WHERE DATEDIFF(return_date,rental_date) >= 5);
 
  
 /*##### 23 Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la categoría
@@ -319,7 +307,9 @@ WHERE r.inventory_id IN (
 	FROM actor AS a
     WHERE actor_id NOT IN ( "Aquí metemos nuestra subconsulta, que es el resultado de todos los actores que salen en horror");*/
     
-    -- Pero usamos NOT IN, porque queremos nombre y apellido de los actores que NO han actuado en ninguna película de la categoría "Horror".
+    -- Usamos NOT IN, porque queremos nombre y apellido de los actores que NO han actuado en ninguna película de la categoría "Horror".
+
+-- Resultado final, ejercicio 23:
 
 SELECT a.first_name AS Nombre, a.last_name AS Apellido
 	FROM actor AS a
@@ -327,9 +317,9 @@ SELECT a.first_name AS Nombre, a.last_name AS Apellido
 							FROM film_actor AS fa
 							INNER JOIN film_category AS f_c
 							USING (film_id)
-    INNER JOIN category AS c
-    USING (category_id)
-    WHERE c.name = 'Horror');
+							INNER JOIN category AS c
+							USING (category_id)
+							WHERE c.name = 'Horror');
  
  
  /*##### 24 Encuentra el título de las películas que son comedias y tienen una duración mayor a 180 minutos en
