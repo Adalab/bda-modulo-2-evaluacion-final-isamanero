@@ -343,5 +343,14 @@ SELECT a.first_name AS Nombre, a.last_name AS Apellido
     USING(category_id)
     WHERE f.length>180 AND c.name = "Comedy";
     
+    
+ -- BONUS --   
 /* #### 25.Encuentra todos los actores que han actuado juntos en al menos una película. La consulta
 debe mostrar el nombre y apellido de los actores y el número de películas en las que han actuado juntos.*/
+
+ -- Para este ejercicio, necsitamos coincidencias de actor_id con film_id.
+ -- Utilizando la tabla film_actor:
+ 
+ SELECT *
+	FROM film_actor;
+ 
