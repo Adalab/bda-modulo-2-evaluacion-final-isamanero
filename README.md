@@ -42,7 +42,7 @@ A continuación, se muestran algunos de los hallazgos más interesantes durante 
 - El <span style="color:green">**95,7%**</span> de las películas fueron alquiladas por 5 días o más.
 
 
--Sólo 3 películas de comedia 😂 duran más de 3 horas: Control Anthem, Saturn Name y Searchers Wait.
+- Sólo 3 películas de comedia 😂 duran más de 3 horas: Control Anthem, Saturn Name y Searchers Wait.
 
 
 ## Conclusión 👌
