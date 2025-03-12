@@ -2,6 +2,8 @@
 
 En este módulo, hemos trabajado con la base de datos Sakila, poniendo en práctica diversas herramientas de SQL, como queries avanzadas, JOINS, y subconsultas. Utilizando MySQL, hemos accedido a la base de datos para obtener y analizar datos clave de películas, actores y clientes.
 
+Documento MySQL: [pinche aquí](https://github.com/Adalab/bda-modulo-2-evaluacion-final-isamanero/blob/main/Evaluacion_mod2.sql)
+
 Diagrama de la Base de Datos
 ![alt text](Diagrama.png)
 *Este diagrama ilustra la estructura de las tablas de la base de datos Sakila.*
@@ -24,7 +26,9 @@ A continuación, se muestran algunos de los hallazgos más interesantes durante 
 
 - Más del <span style="color:green">**57%**</span> de nuestras películas, tienen clasificación: PG,G, o NC-17. (ejercicio 8). Aquí hemos utilizado por ejemplo, esta query para calcularlo:
 
-![alt text](Ejemplo_query.png)
+`SELECT title,rating
+    FROM film
+    WHERE rating NOT IN ("R","PG-13");`
 
 
 - Se han contabilizado las películas 🎞️ según su clasificación (ejercicio 9), y el número de alquileres por clasificación (ejercicio 12).
