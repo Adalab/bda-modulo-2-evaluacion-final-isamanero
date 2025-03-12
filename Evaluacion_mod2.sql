@@ -21,7 +21,7 @@ SELECT DISTINCT title
 /*Utilizando un where, podemos filtrar estas películas clasificadas en PG-13, he añadido la columna para
 el ejercicio, pero no sería necesaria*/
 
-SELECT title, rating
+SELECT title
 	FROM film
     WHERE rating = "PG-13";
 
@@ -44,7 +44,7 @@ SELECT title, description
  -/*Al igual que el ejercicio anterior, he añadido la columna length (duración) para facilitar
  las comprobaciones del ejercicio, pero no es necesaria */
  
- SELECT title, length
+ SELECT title
 	FROM film
     WHERE length > 120;
  
@@ -74,7 +74,7 @@ SELECT title, description
  /*##### 8 Encuentra el título de las películas en la tabla film que no sean ni "R" ni "PG-13" en cuanto a su
  clasificación.*/
  
- SELECT title, rating
+ SELECT title
 	FROM film
     WHERE rating NOT IN ("R","PG-13");
  
@@ -141,7 +141,7 @@ SELECT f.rating AS categoría, COUNT(r.rental_id) AS peliculas_alquiladas
 Desde la tabla actor pasamos por la tabla film_actor, para recoger el film_id
 y relacionarlo con la tabla film (para poder filtrar por película)*/
 
-SELECT a.first_name, a.last_name, f.title
+SELECT a.first_name, a.last_name
 	FROM actor AS a
     INNER JOIN film_actor AS f_a -- relación tabla actor con tabla film_actor
     ON a.actor_id = f_a.actor_id -- recogemos el actor_id que es común
@@ -181,13 +181,14 @@ SELECT first_name, last_name
     
 #####-- 16 Encuentra el título de todas las películas que fueron lanzadas entre el año 2005 y 2010.
 
-SELECT title, release_year
+SELECT title
 	FROM film
     WHERE release_year BETWEEN 2005 AND 2010
     ORDER BY release_year ASC;
 
 -- Obtenemos el mismo número de datos, es decir todas las películas fueron lanzadas entre 2005 y 2010:
 -- ADEMÁS, Con esta comprobación, podemos ver que además, todas son de 2006.
+
 SELECT release_year, COUNT(release_year)
 		FROM film
         GROUP BY release_year; 
@@ -209,9 +210,8 @@ SELECT f.title AS peliculas_familiares
 
 #####-- 18 Muestra el nombre y apellido de los actores que aparecen en más de 10 películas.
 
--- Aquí debemos ver en cuantas películas aparece cada actor, y selecionar los que aparecen en más de 10 películas.
 
-SELECT a.first_name, a.last_name, COUNT(f.film_id) AS numero_peliculas
+SELECT a.first_name, a.last_name -- COUNT(f.film_id) AS numero_peliculas (podemos poner esta columna también)
 	FROM actor AS a
     INNER JOIN film_actor AS f_a 
     ON a.actor_id = f_a.actor_id 
@@ -335,7 +335,7 @@ SELECT a.first_name AS Nombre, a.last_name AS Apellido
  /*##### 24 Encuentra el título de las películas que son comedias y tienen una duración mayor a 180 minutos en
  la tabla film.*/
  
- SELECT f.title AS pelicula, f.length AS duracion
+ SELECT f.title AS pelicula -- f.length AS duracion (se puede añadir esta columna para comprobaciones)
 	FROM film AS f
     INNER JOIN film_category AS f_c
     USING (film_id)
