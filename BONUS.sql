@@ -6,4 +6,4 @@ debe mostrar el nombre y apellido de los actores y el número de películas en l
  -- Utilizando la tabla film_actor:
  
  SELECT *
-	FROM film_actor;
+	FROM film_actor
