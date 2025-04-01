@@ -7,18 +7,24 @@ debe mostrar el nombre y apellido de los actores y el número de películas en l
 
  -- Utilizando la tabla film_actor:
  
-SELECT a.actor_id, a.first_name, a.last_name, a2.actor_id, a2.first_name, a2.last_name,
- COUNT(f.film_id)
-	FROM actor a
-	INNER JOIN actor a2
-	ON  a2.actor_id = a.actor_id
-	INNER JOIN film_actor f
-	ON a.actor_id = f.actor_id
-	WHERE  a.actor_id < a2.actor_id
-	GROUP BY a2.actor_id,  a.actor_id
-	HAVING count(*) > 1
-	ORDER BY a.actor_id, a2.actor_id;
- 
+WITH ActoresRelacionados AS ( 
+  SELECT a1.actor_id AS actor_id1, a2.actor_id AS actor_id2, 
+COUNT(*) AS cantidad_actuaciones 
+  FROM film_actor a1 
+  JOIN film_actor a2 ON a1.film_id = a2.film_id AND 
+a1.actor_id < a2.actor_id 
+  GROUP BY a1.actor_id, a2.actor_id 
+  HAVING COUNT(*) >= 1 
+) 
+SELECT actor1.first_name AS actor1_nombre, actor1.last_name AS 
+actor1_apellido, 
+       actor2.first_name AS actor2_nombre, actor2.last_name AS 
+actor2_apellido, 
+       cantidad_actuaciones 
+FROM ActoresRelacionados 
+JOIN actor AS actor1 ON actor1.actor_id = actor_id1 
+JOIN actor AS actor2 ON actor2.actor_id = actor_id2 
+ORDER BY cantidad_actuaciones DESC;
  
  
  select count(*)
